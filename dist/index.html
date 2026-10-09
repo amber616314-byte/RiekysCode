@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#07141e">
+  <meta name="description" content="驾驶 J-35 从航母起飞，在动态海洋上空展开 3D 空战。支持手机触屏与键盘操控。">
+  <title>J-35 · 深蓝突击</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307141e'/%3E%3Cpath d='M32 8L37 27L55 40L55 45L36 39L36 50L43 55L43 58L32 54L21 58L21 55L28 50L28 39L9 45L9 40L27 27Z' fill='%238bf2e0'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="game" aria-label="J-35 深蓝突击空战游戏">
+    <div id="viewport"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div id="damage-flash" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="深蓝突击首页"><span class="brand-mark">✦</span><span>深蓝突击<small>BLUEWATER STRIKE</small></span></a>
+      <div class="top-actions">
+        <button id="quality" class="icon-button quality" aria-label="切换画质" title="切换画质">画质 <span id="quality-label">自动</span></button>
+        <button id="sound" class="icon-button" aria-label="开启声音" title="声音"><svg id="sound-on" viewBox="0 0 24 24"><path d="M11 4 6 8H3v8h3l5 4Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></svg><span id="sound-off">静音</span></button>
+        <button id="fullscreen" class="icon-button" aria-label="进入全屏" title="全屏"><svg viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button>
+        <button id="pause-button" class="icon-button hidden" aria-label="暂停游戏"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+      </div>
+    </header>
+
+    <section id="start-screen" class="screen start-screen">
+      <div class="mission-caption"><span class="line"></span>西太平洋 · 航母战斗群<small>06:35 / 海况 2 级</small></div>
+      <div class="briefing">
+        <div class="eyebrow">海上制空任务 <span>01</span></div>
+        <h1>向深蓝，<br>起飞。</h1>
+        <p class="intro">驾驶 J-35 离开甲板，<br class="mobile-br">穿越海面，夺取制空权。</p>
+        <div class="plane-tag"><span>J-35</span><div>舰载隐身战斗机<small>双发 · 空战任务</small></div><span class="ready-tag">准备就绪</span></div>
+        <button id="launch" class="primary-button" disabled><span class="button-icon">✦</span><span id="launch-label">正在准备甲板…</span><span class="button-key">ENTER</span></button>
+        <div class="start-hint"><span class="desktop-hint">W A S D / 方向键飞行 · 空格导弹 · F 干扰弹</span><span class="touch-hint">摇杆飞行 · 点击导弹 · 机炮自动射击</span></div>
+      </div>
+      <div class="scene-label"><span class="small-cross">+</span><div>飞行甲板<small>CATAPULT 02 / STANDBY</small></div></div>
+      <div class="start-bottom"><span>J-35 / BLUEWATER</span><span>3D 空战 · 触屏适配</span></div>
+    </section>
+
+    <section id="hud" class="hud hidden" aria-label="飞行状态">
+      <div class="hud-left">
+        <div class="mission-status"><span class="eyebrow">任务进行中</span><strong id="mission-name">离舰起飞</strong><span id="mission-detail">弹射准备</span></div>
+        <div class="health-row"><span>机体</span><strong id="health-number">100</strong><span class="unit">%</span></div>
+        <div class="health-track"><i id="health-fill"></i></div>
+        <div class="score-row"><span>击落 <strong id="kills">00</strong></span><span>得分 <strong id="score">00000</strong></span></div>
+      </div>
+      <div class="hud-right"><canvas id="radar" width="220" height="220" aria-label="敌机雷达"></canvas><div class="radar-label">雷达 <span id="target-count">0 TGT</span></div></div>
+      <div id="aim" class="aim hidden" aria-hidden="true"><div class="aim-ring"></div><div class="aim-cross"></div><span>AUTO GUN</span></div>
+      <div id="target-layer" aria-hidden="true"></div>
+      <div class="flight-readout"><div><span>速度</span><strong id="speed">000</strong><small>km/h</small></div><div><span>高度</span><strong id="altitude">018</strong><small>m</small></div></div>
+      <div class="bottom-center"><span id="flight-message">舰载机联队 · 通讯正常</span><div class="heading-scale"><span>285</span><span>300</span><strong>315</strong><span>330</span><span>345</span></div></div>
+      <div id="boss-hud" class="boss-hud hidden"><span>敌方旗舰</span><div><i id="boss-health"></i></div></div>
+    </section>
+
+    <div id="controls" class="controls hidden">
+      <div id="joystick" class="joystick" aria-label="飞行摇杆" role="application"><div class="joy-cross"></div><div id="joy-stick" class="joy-stick"></div><span>飞行</span></div>
+      <div class="weapons"><button id="flare" class="weapon secondary-weapon" aria-label="释放干扰弹"><svg viewBox="0 0 32 32"><path d="m16 4 2 8 8-4-5 8 7 4-9 1-3 9-3-9-9-1 7-4-5-8 8 4Z"/></svg><span>干扰弹</span><small id="flare-count">3</small></button><button id="missile" class="weapon missile-weapon" aria-label="发射追踪导弹"><svg viewBox="0 0 32 32"><path d="m24 4 4 4-9 14-6-3ZM13 16l-6 1-3 5 8-1m7 0-1 7 5-3 1-7M10 23l-5 5m8-3-4 4"/></svg><span>导弹</span><small id="missile-count">8</small><div id="cooldown-ring"></div></button></div>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+    <div id="wave-banner" class="wave-banner"><small id="wave-caption">AIR CONTACT</small><strong id="wave-title">敌机来袭</strong><span id="wave-subtitle">保护航母战斗群</span></div>
+    <section id="pause-screen" class="modal-screen hidden" aria-label="暂停">
+      <div class="modal-card"><div class="eyebrow">FLIGHT PAUSED</div><h2>航程暂停</h2><p>机炮自动射击。对准敌机后发射导弹，<br>遭到攻击时使用干扰弹。</p><button id="resume" class="primary-button">继续飞行</button><button id="restart-pause" class="text-button">重新出击</button><p class="keyboard-guide">WASD 飞行 · 空格导弹 · F 干扰弹 · P 暂停</p></div>
+    </section>
+    <section id="result-screen" class="modal-screen hidden" aria-label="战斗结果">
+      <div class="modal-card result-card"><div id="result-eyebrow" class="eyebrow">MISSION COMPLETE</div><h2 id="result-title">海空肃清</h2><p id="result-description">航母战斗群安全。欢迎返航，飞行员。</p><div class="result-stats"><div><span>任务得分</span><strong id="result-score">00000</strong></div><div><span>击落目标</span><strong id="result-kills">00</strong></div><div><span>飞行时间</span><strong id="result-time">00:00</strong></div></div><button id="restart" class="primary-button">再次出击</button><button id="return" class="text-button">返回甲板</button></div>
+    </section>
+    <div id="error-screen" class="modal-screen hidden"><div class="modal-card"><h2>暂时无法起飞</h2><p id="error-message">请使用支持 WebGL 的浏览器打开游戏。</p><button class="primary-button" onclick="location.reload()">重新加载</button></div></div>
+  </main>
+  <script type="module" src="./game.js"></script>
+  <script>window.addEventListener('error',function(e){if(e.message.includes('WebGL')||e.message.includes('Failed to')){document.getElementById('error-message').textContent='画面加载失败，请重新打开，或在 Safari / Chrome 中打开。';document.getElementById('error-screen').classList.remove('hidden');}});</script>
+</body>
+</html>
