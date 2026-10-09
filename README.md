@@ -4,7 +4,9 @@
 
 ## 在线游玩
 
-[J-35 · 深蓝突击](https://j35-ocean-bluewater-strike.amberlux.chatgpt.site)
+[在 GitHub Pages 游玩 J-35 · 深蓝突击](https://amber616314-byte.github.io/cubic-wilds/)
+
+游戏由本仓库的 `gh-pages` 分支发布到 GitHub Pages，全部素材均保存在 GitHub 仓库中。
 
 ## 在电脑上运行
 
